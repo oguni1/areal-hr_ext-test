@@ -15,7 +15,7 @@ const pool = new Pool({
 });
 
 var corsOptions = {
-  origin: "http://localhost:8081"
+  origin: "http://localhost:8080"
 };
 
 app.use(cors(corsOptions));
@@ -35,6 +35,20 @@ app.get('/organizations', async (req, res) => {
   try {
     const { rows } = await pool.query('SELECT * FROM organizations;');
     res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.get('/api/organizations/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const { rows } = await pool.query('SELECT * FROM organizations WHERE id = $1;', [id]);
+    if (rows.length === 0) {
+      return res.status(404).json({ error: 'Organization not found' });
+    }
+    res.json(rows[0]);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Internal server error' });

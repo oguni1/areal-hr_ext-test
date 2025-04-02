@@ -1,5 +1,13 @@
 # areal-hr_ext-test
 
+## Запуск приложения:
+
+Запуск сервера из директории api:
+api/node server.js
+
+Клиент:
+app/npm run serve
+
 ## Используемый инструментарий:
 Операционная система: Windows 10 с установленными WSL2 и Docker desktop
 
