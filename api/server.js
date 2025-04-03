@@ -15,7 +15,7 @@ async function testConnection() {
 
     const text = 'SELECT * FROM organizations;'
 
-    const res = await client.query(text)
+    const res = client.query(text)
     console.log(res.rows[0]);
 
     client.end();
