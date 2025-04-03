@@ -1,12 +1,6 @@
-const express = require("express");
-const bodyParser = require("body-parser");
-const cors = require("cors");
+const { Client } = require('pg');
 
-const app = express();
-
-const { Pool } = require('pg');
-
-const pool = new Pool({
+const client = new Client({
   user: 'postgres',
   host: 'localhost',
   database: 'mydb',
@@ -14,49 +8,20 @@ const pool = new Pool({
   port: 3306,
 });
 
-var corsOptions = {
-  origin: "http://localhost:8080"
-};
-
-app.use(cors(corsOptions));
-
-// parse requests of content-type - application/json
-app.use(bodyParser.json());
-
-// parse requests of content-type - application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: true }));
-
-// simple route
-app.get("/", (req, res) => {
-  res.json({ message: "test." });
-});
-
-app.get('/organizations', async (req, res) => {
+async function testConnection() {
   try {
-    const { rows } = await pool.query('SELECT * FROM organizations;');
-    res.json(rows);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
+    client.connect();
+    console.log('Подключение к PostgreSQL установлено');
 
-app.get('/api/organizations/:id', async (req, res) => {
-  const { id } = req.params;
-  try {
-    const { rows } = await pool.query('SELECT * FROM organizations WHERE id = $1;', [id]);
-    if (rows.length === 0) {
-      return res.status(404).json({ error: 'Organization not found' });
-    }
-    res.json(rows[0]);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
+    const text = 'SELECT * FROM organizations;'
 
-// set port, listen for requests
-const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}.`);
-});
+    const res = await client.query(text)
+    console.log(res.rows[0]);
+
+    client.end();
+  } catch (err) {
+    console.error('Ошибка подключения к PostgreSQL:', err);
+  }
+}
+
+testConnection();
