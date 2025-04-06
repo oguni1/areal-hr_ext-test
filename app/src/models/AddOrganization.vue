@@ -2,25 +2,25 @@
   <div class="submit-form">
     <div v-if="!submitted">
       <div class="form-group">
-        <label for="title">Title</label>
+        <label for="name">Name</label>
         <input
           type="text"
           class="form-control"
-          id="title"
+          id="name"
           required
-          v-model="organization.title"
-          name="title"
+          v-model="organization.name"
+          name="name"
         />
       </div>
 
       <div class="form-group">
-        <label for="description">Description</label>
+        <label for="comment">Comment</label>
         <input
           class="form-control"
-          id="description"
+          id="comment"
           required
-          v-model="organization.description"
-          name="description"
+          v-model="organization.comment"
+          name="comment"
         />
       </div>
 
@@ -42,10 +42,9 @@ export default {
   data() {
     return {
       organization: {
-        id: null,
-        title: "",
-        description: "",
-        published: false
+        organization_id: null,
+        name: "",
+        comment: ""
       },
       submitted: false
     };
@@ -53,13 +52,13 @@ export default {
   methods: {
     saveOrganization() {
       var data = {
-        title: this.organization.title,
-        description: this.organization.description
+        name: this.organization.name,
+        comment: this.organization.comment
       };
 
       service.create(data)
         .then(response => {
-          this.organization.id = response.data.id;
+          this.organization.organization_id = response.data.organization_id;
           console.log(response.data);
           this.submitted = true;
         })

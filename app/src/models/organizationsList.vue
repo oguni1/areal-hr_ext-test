@@ -13,7 +13,7 @@
           :key="index"
           @click="setActiveOrganization(organization, index)"
         >
-          {{ organization.title }}
+          {{ organization.name }}
         </li>
       </ul>
 
@@ -22,16 +22,13 @@
       <div v-if="currentOrganization">
         <h4>organization</h4>
         <div>
-          <label><strong>Title:</strong></label> {{ currentOrganization.title }}
+          <label><strong>Name:</strong></label> {{ currentOrganization.name }}
         </div>
         <div>
-          <label><strong>Description:</strong></label> {{ currentOrganization.description }}
-        </div>
-        <div>
-          <label><strong>Status:</strong></label> {{ currentOrganization.published ? "Published" : "Pending" }}
+          <label><strong>Comment:</strong></label> {{ currentOrganization.comment }}
         </div>
 
-        <router-link :to="'/organizations/' + currentOrganization.id" class="badge badge-warning">Edit</router-link>
+        <router-link :to="'/organizations/' + currentOrganization.organization_id" class="badge badge-warning">Edit</router-link>
       </div>
       <div v-else>
       </div>
@@ -49,7 +46,7 @@ export default {
       organizations: [],
       currentOrganization: null,
       currentIndex: -1,
-      title: ""
+      name: ""
     };
   },
   methods: {
@@ -86,8 +83,8 @@ export default {
         });
     },
     
-    searchTitle() {
-      service.findByTitle(this.title)
+    searchname() {
+      service.findByName(this.name)
         .then(response => {
           this.organizations = response.data;
           this.setActiveOrganization(null);
