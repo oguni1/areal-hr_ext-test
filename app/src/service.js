@@ -25,8 +25,8 @@ class service {
     return http.delete(`/organizations`);
   }
 
-  findByTitle(title) {
-    return http.get(`/organizations?title=${title}`);
+  findByName(name) {
+    return http.get(`/organizations?name=${name}`);
   }
 }
 
