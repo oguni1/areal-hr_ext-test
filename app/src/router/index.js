@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Organizations from '../components/Organizations.vue'
 import Roles from '../components/Roles.vue'
+import Departments from '../components/Departments.vue'
 
 const routes = [
   {
@@ -16,6 +17,11 @@ const routes = [
       path: '/roles',
       name: 'roles',
       component:Roles
+  },
+  {
+        path: '/departments',
+        name: 'departments',
+        component: Departments
   }
 ]
 
