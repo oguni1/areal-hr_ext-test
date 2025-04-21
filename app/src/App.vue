@@ -4,6 +4,7 @@
 
     <div class="org-form">
       <h2>Добавить организацию</h2>
+      <input v-model="newOrg.id" placeholder="id организации">
       <input v-model="newOrg.name" placeholder="Название организации">
       <input v-model="newOrg.comment" placeholder="Комментарий">
       <button @click="addOrg">Добавить</button>
@@ -15,6 +16,7 @@
       <div v-else>
         <div v-for="org in organizations" :key="org.id" class="org-item">
           <div class="org-info">
+            <p>id: {{ org.id }}</p>
             <p>Название: {{ org.name }}</p>
             <p>Комментарий: {{ org.comment || 'Нет комментария' }}</p>
           </div>
@@ -33,6 +35,7 @@ export default {
     return {
       organizations: [],
       newOrg: {
+        id: 0,
         name: '',
         comment: ''
       },
@@ -59,7 +62,7 @@ export default {
 
       try {
         await this.$api.post('/organizations', this.newOrg)
-        this.newOrg = { name: '', comment: '' }
+        this.newOrg = {id:0, name: '', comment: '' }
         await this.fetchOrgs()
       } catch (error) {
         console.error('Ошибка:', error)

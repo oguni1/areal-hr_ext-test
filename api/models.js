@@ -19,10 +19,10 @@ const Organization = {
         return rows[0];
     },
 
-    async create({ name, comment }) {
+    async create({id, name, comment }) {
         const { rows } = await pool.query(
-            'INSERT INTO organizations (name, comment) VALUES ($1, $2)',
-            [name, comment]
+            'INSERT INTO organizations (id, name, comment) VALUES ($1, $2, $3)',
+            [id, name, comment]
         );
         return rows[0];
     },
