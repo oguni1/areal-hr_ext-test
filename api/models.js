@@ -27,7 +27,7 @@ const Organization = {
         return rows[0];
     },
 
-    async update(id, { name, comment }) {
+    async update({id, name, comment }) {
         const { rows } = await pool.query(
             'UPDATE organizations SET name = $1, comment = $2 WHERE id = $3',
             [name, comment, id]
