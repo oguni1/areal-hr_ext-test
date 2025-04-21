@@ -30,7 +30,7 @@ const Organization = {
     async update({id, name, comment }) {
         const { rows } = await pool.query(
             'UPDATE organizations SET name = $1, comment = $2 WHERE id = $3',
-            [name, comment, id]
+            [id, name, comment]
         );
         return rows[0];
     },
@@ -41,5 +41,38 @@ const Organization = {
     }
 };
 
+const Role = {
+    async getAll() {
+        const { rows } = await pool.query('SELECT * FROM roles');
+        return rows;
+    },
 
-module.exports = { Organization };
+    async getById(id) {
+        const { rows } = await pool.query('SELECT * FROM roles WHERE id = $1', [id]);
+        return rows[0];
+    },
+
+    async create({id, name}) {
+        const { rows } = await pool.query(
+            'INSERT INTO organizations (id, name) VALUES ($1, $2)',
+            [id, name]
+        );
+        return rows[0];
+    },
+
+    async update({id, name}) {
+        const { rows } = await pool.query(
+            'UPDATE organizations SET name = $1 WHERE id = $2',
+            [id, name]
+        );
+        return rows[0];
+    },
+
+    async delete(id) {
+        await pool.query('DELETE FROM roles WHERE id = $1', [id]);
+        return true;
+    }
+};
+
+
+module.exports = { Organization, Role };

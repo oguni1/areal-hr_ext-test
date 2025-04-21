@@ -1,5 +1,5 @@
 const express = require('express');
-const { Organization, Department, Role } = require('./models');
+const { Organization, Role } = require('./models');
 
 const router = express.Router();
 
@@ -45,6 +45,26 @@ router.delete('/organizations/:id', async (req, res) => {
     try {
         await Organization.delete(req.params.id);
         res.status(204).end();
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+
+router.get('/roles', async (req, res) => {
+    try {
+        const organizations = await Role.getAll();
+        res.json(roles);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+router.get('/roles/:id', async (req, res) => {
+    try {
+        const role = await Role.getById(req.params.id);
+        if (!role) return res.status(404).json({ error: 'Role not found' });
+        res.json(role);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

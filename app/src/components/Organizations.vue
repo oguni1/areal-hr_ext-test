@@ -29,7 +29,7 @@ name: 'Organizations',
     return {
       organizations: [],
       newOrg: {
-        id: 0,
+        id: '',
         name: '',
         comment: ''
       },
