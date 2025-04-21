@@ -1,16 +1,16 @@
 <template>
   <div class="container">
     <h1>Роли</h1>
-    <div class="role-form">
+    <div>
       <h2>Добавить роль</h2>
       <input v-model.number="newRole.id" type="number" placeholder="ID роли">
       <input v-model="newRole.name" placeholder="Название роли">
       <button @click="addRole">Добавить</button>
     </div>
 
-    <div class="role-list">
+    <div>
       <h2>Список ролей</h2>
-        <div v-for="role in roles" :key="role.id" class="role-item">
+        <div v-for="role in roles" :key="role.id">
             <p>ID: {{ role.id }}</p>
             <p>Название: {{ role.name }}</p>
             <button @click="deleteRole(role.id)">Удалить</button>

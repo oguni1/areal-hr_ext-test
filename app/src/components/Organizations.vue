@@ -2,7 +2,7 @@
   <div class="container">
     <h1>Организации</h1>
 
-    <div class="org-form">
+    <div>
       <h2>Добавить организацию</h2>
       <input v-model="newOrg.id" placeholder="id организации">
       <input v-model="newOrg.name" placeholder="Название организации">
@@ -10,9 +10,9 @@
       <button @click="addOrg">Добавить</button>
     </div>
 
-    <div class="org-list">
+    <div>
       <h2>Список организаций</h2>
-        <div v-for="org in organizations" :key="org.id" class="org-item">
+        <div v-for="org in organizations" :key="org.id">
             <p>id: {{ org.id }}</p>
             <p>Название: {{ org.name }}</p>
             <p>Комментарий: {{ org.comment || 'Нет комментария' }}</p>

@@ -75,4 +75,39 @@ const Role = {
 };
 
 
-module.exports = { Organization, Role };
+const Department = {
+    async getAll() {
+        const { rows } = await pool.query('SELECT * FROM departments');
+        return rows;
+    },
+
+    async getById(id) {
+        const { rows } = await pool.query('SELECT * FROM departments WHERE id = $1', [id]);
+        return rows[0];
+    },
+
+    async create({id, organization_id, department_id, name, comment }) {
+        const { rows } = await pool.query(
+            'INSERT INTO departments (id, organization_id, department_id,  name, comment) VALUES ($1, $2, $3, $4, $5)',
+            [id, organization_id, department_id, name, comment]
+        );
+        return rows[0];
+    },
+
+    async update({id, organization_id, department_id, name, comment }) {
+        const { rows } = await pool.query(
+            'UPDATE departments SET name = $1, comment = $2 WHERE id = $3',
+            [id, organization_id, department_id, name, comment]
+        );
+        return rows[0];
+    },
+
+    async delete(id) {
+        await pool.query('DELETE FROM departments WHERE id = $1', [id]);
+        return true;
+    }
+};
+
+
+
+module.exports = { Organization, Role, Department };

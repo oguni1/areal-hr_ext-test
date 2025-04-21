@@ -1,5 +1,5 @@
 const express = require('express');
-const { Organization, Role } = require('./models');
+const { Organization, Role, Department} = require('./models');
 
 const router = express.Router();
 
@@ -101,5 +101,60 @@ router.delete('/roles/:id', async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
+
+
+
+
+
+
+
+
+router.get('/departments', async (req, res) => {
+    try {
+        const departments = await Department.getAll();
+        res.json(departments);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+router.get('/departments/:id', async (req, res) => {
+    try {
+        const Department = await Department.getById(req.params.id);
+        if (!Department) return res.status(404).json({ error: 'Department not found' });
+        res.json(Department);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+router.post('/departments', async (req, res) => {
+    try {
+        const newDepartment = await Department.create(req.body);
+        res.status(201).json(newDepartment);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+router.put('/departments/:id', async (req, res) => {
+    try {
+        const updatedDepartment = await Department.update(req.params.id, req.body);
+        if (!updatedDepartment) return res.status(404).json({ error: 'Department not found' });
+        res.json(updatedDepartment);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+router.delete('/departments/:id', async (req, res) => {
+    try {
+        await Department.delete(req.params.id);
+        res.status(204).end();
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 
 module.exports = router;
