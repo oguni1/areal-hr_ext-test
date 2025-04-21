@@ -54,7 +54,7 @@ export default {
 
       try {
         await this.$api.post('/roles', this.newRole)
-        this.newRole = { id: 0, name: '' }
+        this.newRole = { id: '', name: '' }
         await this.fetchRoles()
       } catch (error) {
         console.error('Ошибка при добавлении роли:', error)

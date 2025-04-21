@@ -56,7 +56,7 @@ name: 'Organizations',
 
       try {
         await this.$api.post('/organizations', this.newOrg)
-        this.newOrg = {id:0, name: '', comment: '' }
+        this.newOrg = {id:'', name: '', comment: '' }
         await this.fetchOrgs()
       } catch (error) {
         console.error('Ошибка:', error)

@@ -51,9 +51,13 @@ router.delete('/organizations/:id', async (req, res) => {
 });
 
 
+
+
+
+
 router.get('/roles', async (req, res) => {
     try {
-        const organizations = await Role.getAll();
+        const roles = await Role.getAll();
         res.json(roles);
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -62,9 +66,37 @@ router.get('/roles', async (req, res) => {
 
 router.get('/roles/:id', async (req, res) => {
     try {
-        const role = await Role.getById(req.params.id);
-        if (!role) return res.status(404).json({ error: 'Role not found' });
-        res.json(role);
+        const Role = await Role.getById(req.params.id);
+        if (!Role) return res.status(404).json({ error: 'Role not found' });
+        res.json(Role);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+router.post('/roles', async (req, res) => {
+    try {
+        const newRole = await Role.create(req.body);
+        res.status(201).json(newRole);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+router.put('/roles/:id', async (req, res) => {
+    try {
+        const updatedRole = await Role.update(req.params.id, req.body);
+        if (!updatedRole) return res.status(404).json({ error: 'Role not found' });
+        res.json(updatedRole);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+router.delete('/roles/:id', async (req, res) => {
+    try {
+        await Role.delete(req.params.id);
+        res.status(204).end();
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

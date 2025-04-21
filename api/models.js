@@ -52,18 +52,18 @@ const Role = {
         return rows[0];
     },
 
-    async create({id, name}) {
+    async create({ id, name }) {
         const { rows } = await pool.query(
-            'INSERT INTO organizations (id, name) VALUES ($1, $2)',
+            'INSERT INTO roles (id, name) VALUES ($1, $2)',
             [id, name]
         );
         return rows[0];
     },
 
-    async update({id, name}) {
+    async update({ id, name }) {
         const { rows } = await pool.query(
-            'UPDATE organizations SET name = $1 WHERE id = $2',
-            [id, name]
+            'UPDATE roles SET name = $1 WHERE id = $2',
+            [name, id]
         );
         return rows[0];
     },
