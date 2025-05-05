@@ -3,7 +3,6 @@
     <h1>Роли</h1>
     <div>
       <h2>Добавить роль</h2>
-      <input v-model.number="newRole.id" type="number" placeholder="ID роли">
       <input v-model="newRole.name" placeholder="Название роли">
       <button @click="addRole">Добавить</button>
     </div>
@@ -12,8 +11,16 @@
       <h2>Список ролей</h2>
         <div v-for="role in roles" :key="role.id">
             <p>ID: {{ role.id }}</p>
-            <p>Название: {{ role.name }}</p>
-            <button @click="deleteRole(role.id)">Удалить</button>
+            <template v-if="editingRole && editingRole.id === role.id">
+              <input v-model="editingRole.name" placeholder="Название роли">
+              <button @click="updateRole">Сохранить</button>
+              <button @click="cancelEdit">Отмена</button>
+            </template>
+            <template v-else>
+              <p>Название: {{ role.name }}</p>
+              <button @click="startEdit(role)">Редактировать</button>
+              <button @click="deleteRole(role.id)">Удалить</button>
+            </template>
         </div>
     </div>
   </div>
@@ -25,9 +32,9 @@ export default {
     return {
       roles: [],
       newRole: {
-        id: '',
         name: ''
       },
+      editingRole: null,
       loading: false
     }
   },
@@ -35,6 +42,11 @@ export default {
     await this.fetchRoles()
   },
   methods: {
+    getNextId() {
+      if (this.roles.length === 0) return 1
+      const maxId = Math.max(...this.roles.map(role => parseInt(role.id)))
+      return maxId + 1
+    },
     async fetchRoles() {
       this.loading = true
       try {
@@ -53,8 +65,12 @@ export default {
       }
 
       try {
-        await this.$api.post('/roles', this.newRole)
-        this.newRole = { id: '', name: '' }
+        const newRoleWithId = {
+          ...this.newRole,
+          id: this.getNextId()
+        }
+        await this.$api.post('/roles', newRoleWithId)
+        this.newRole = { name: '' }
         await this.fetchRoles()
       } catch (error) {
         console.error('Ошибка при добавлении роли:', error)
@@ -69,6 +85,31 @@ export default {
         await this.fetchRoles()
       } catch (error) {
         console.error('Ошибка при удалении роли:', error)
+      }
+    },
+    startEdit(role) {
+      this.editingRole = { ...role }
+    },
+    cancelEdit() {
+      this.editingRole = null
+    },
+    async updateRole() {
+      if (!this.editingRole.name) {
+        alert('Название роли обязательно!')
+        return
+      }
+
+      try {
+        const updateData = {
+          id: this.editingRole.id,
+          name: this.editingRole.name
+        }
+        await this.$api.put(`/roles/${this.editingRole.id}`, updateData)
+        this.editingRole = null
+        await this.fetchRoles()
+      } catch (error) {
+        console.error('Ошибка при обновлении роли:', error)
+        alert(`Ошибка: ${error.response?.data?.message || error.message}`)
       }
     }
   }
