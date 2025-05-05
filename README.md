@@ -2,13 +2,21 @@
 
 ## Запуск приложения:
 
-Запуск сервера из директории api:
+Запуск бэкенда:
 
-api/node server.js
+cd api
+node server.js
 
 Клиент:
 
-app/npm run serve
+cd app
+npm run serve
+
+Миграции:
+
+cd api
+cd migrations
+node run_migrations.js
 
 ## Используемый инструментарий:
 Операционная система: Windows 10 с установленными WSL2 и Docker desktop
