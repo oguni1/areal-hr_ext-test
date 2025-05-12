@@ -1,7 +1,17 @@
 const express = require('express');
+const { body, param, validationResult } = require('express-validator');
 const { Organization, Role, Department, Employee, File, Passport, Registration, OperationHistory, Users } = require('./models');
 
 const router = express.Router();
+
+// Validation middleware
+const validate = (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+    next();
+};
 
 router.get('/organizations', async (req, res) => {
     try {
@@ -22,7 +32,12 @@ router.get('/organizations/:id', async (req, res) => {
     }
 });
 
-router.post('/organizations', async (req, res) => {
+router.post('/organizations', [
+    body('id').isUUID().withMessage('Invalid ID format'),
+    body('name').notEmpty().trim().withMessage('Name is required'),
+    body('comment').optional().trim(),
+    validate
+], async (req, res) => {
     try {
         const newOrganization = await Organization.create(req.body);
         res.status(201).json(newOrganization);
@@ -31,7 +46,12 @@ router.post('/organizations', async (req, res) => {
     }
 });
 
-router.put('/organizations/:id', async (req, res) => {
+router.put('/organizations/:id', [
+    param('id').isUUID().withMessage('Invalid ID format'),
+    body('name').notEmpty().trim().withMessage('Name is required'),
+    body('comment').optional().trim(),
+    validate
+], async (req, res) => {
     try {
         const updatedOrganization = await Organization.update({ ...req.body, id: req.params.id });
         if (!updatedOrganization) {
@@ -55,11 +75,6 @@ router.delete('/organizations/:id', async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
-
-
-
-
-
 
 router.get('/roles', async (req, res) => {
     try {
@@ -114,13 +129,6 @@ router.delete('/roles/:id', async (req, res) => {
     }
 });
 
-
-
-
-
-
-
-
 router.get('/departments', async (req, res) => {
     try {
         const departments = await Department.getAll();
@@ -140,7 +148,14 @@ router.get('/departments/:id', async (req, res) => {
     }
 });
 
-router.post('/departments', async (req, res) => {
+router.post('/departments', [
+    body('id').isUUID().withMessage('Invalid ID format'),
+    body('organization_id').isUUID().withMessage('Invalid organization ID format'),
+    body('department_id').optional().isUUID().withMessage('Invalid department ID format'),
+    body('name').notEmpty().trim().withMessage('Name is required'),
+    body('comment').optional().trim(),
+    validate
+], async (req, res) => {
     try {
         const newDepartment = await Department.create(req.body);
         res.status(201).json(newDepartment);
@@ -149,7 +164,14 @@ router.post('/departments', async (req, res) => {
     }
 });
 
-router.put('/departments/:id', async (req, res) => {
+router.put('/departments/:id', [
+    param('id').isUUID().withMessage('Invalid ID format'),
+    body('organization_id').isUUID().withMessage('Invalid organization ID format'),
+    body('department_id').optional().isUUID().withMessage('Invalid department ID format'),
+    body('name').notEmpty().trim().withMessage('Name is required'),
+    body('comment').optional().trim(),
+    validate
+], async (req, res) => {
     try {
         const updatedDepartment = await Department.update({ ...req.body, id: req.params.id });
         if (!updatedDepartment) {
@@ -197,7 +219,17 @@ router.get('/employees/:id', async (req, res) => {
   }
 })
 
-router.post('/employees', async (req, res) => {
+router.post('/employees', [
+    body('id').isUUID().withMessage('Invalid ID format'),
+    body('last_name').notEmpty().trim().withMessage('Last name is required'),
+    body('first_name').notEmpty().trim().withMessage('First name is required'),
+    body('patronym').optional().trim(),
+    body('birth_date').isISO8601().withMessage('Invalid birth date format'),
+    body('passport').isUUID().withMessage('Invalid passport ID format'),
+    body('registration').isUUID().withMessage('Invalid registration ID format'),
+    body('scan').optional().isUUID().withMessage('Invalid scan ID format'),
+    validate
+], async (req, res) => {
   try {
     const employee = await Employee.create(req.body)
     res.status(201).json(employee)
@@ -207,7 +239,17 @@ router.post('/employees', async (req, res) => {
   }
 })
 
-router.put('/employees/:id', async (req, res) => {
+router.put('/employees/:id', [
+    param('id').isUUID().withMessage('Invalid ID format'),
+    body('last_name').notEmpty().trim().withMessage('Last name is required'),
+    body('first_name').notEmpty().trim().withMessage('First name is required'),
+    body('patronym').optional().trim(),
+    body('birth_date').isISO8601().withMessage('Invalid birth date format'),
+    body('passport').isUUID().withMessage('Invalid passport ID format'),
+    body('registration').isUUID().withMessage('Invalid registration ID format'),
+    body('scan').optional().isUUID().withMessage('Invalid scan ID format'),
+    validate
+], async (req, res) => {
   try {
     const existingEmployee = await Employee.getById(req.params.id)
     if (!existingEmployee) {

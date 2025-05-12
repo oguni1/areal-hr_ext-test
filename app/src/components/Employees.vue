@@ -7,8 +7,19 @@
       <input v-model="newEmployee.first_name" placeholder="Имя">
       <input v-model="newEmployee.patronym" placeholder="Отчество">
       <input v-model="newEmployee.birth_date" type="date" placeholder="Дата рождения">
-      <input v-model.number="newEmployee.passport" type="number" placeholder="Паспорт">
-      <input v-model.number="newEmployee.registration" type="number" placeholder="Регистрация">
+      <!-- Passport fields -->
+      <input v-model="newEmployee.passport_series" placeholder="Серия паспорта">
+      <input v-model="newEmployee.passport_number" placeholder="Номер паспорта">
+      <input v-model="newEmployee.passport_date" type="date" placeholder="Дата выдачи паспорта">
+      <input v-model="newEmployee.passport_code" placeholder="Код подразделения">
+      <input v-model="newEmployee.passport_issued_by" placeholder="Кем выдан паспорт">
+      <!-- Registration fields -->
+      <input v-model="newEmployee.reg_state" placeholder="Область регистрации">
+      <input v-model="newEmployee.reg_city" placeholder="Город регистрации">
+      <input v-model="newEmployee.reg_street" placeholder="Улица регистрации">
+      <input v-model="newEmployee.reg_house" placeholder="Дом регистрации">
+      <input v-model="newEmployee.reg_building" placeholder="Корпус регистрации">
+      <input v-model="newEmployee.reg_apartment" placeholder="Квартира регистрации">
       <input v-model.number="newEmployee.scan" type="number" placeholder="Скан">
       <button @click="addEmployee">Добавить</button>
     </div>
@@ -22,8 +33,19 @@
               <input v-model="editingEmployee.first_name" placeholder="Имя">
               <input v-model="editingEmployee.patronym" placeholder="Отчество">
               <input v-model="editingEmployee.birth_date" type="date" placeholder="Дата рождения">
-              <input v-model.number="editingEmployee.passport" type="number" placeholder="Паспорт">
-              <input v-model.number="editingEmployee.registration" type="number" placeholder="Регистрация">
+              <!-- Passport fields -->
+              <input v-model="editingEmployee.passport_series" placeholder="Серия паспорта">
+              <input v-model="editingEmployee.passport_number" placeholder="Номер паспорта">
+              <input v-model="editingEmployee.passport_date" type="date" placeholder="Дата выдачи паспорта">
+              <input v-model="editingEmployee.passport_code" placeholder="Код подразделения">
+              <input v-model="editingEmployee.passport_issued_by" placeholder="Кем выдан паспорт">
+              <!-- Registration fields -->
+              <input v-model="editingEmployee.reg_state" placeholder="Область регистрации">
+              <input v-model="editingEmployee.reg_city" placeholder="Город регистрации">
+              <input v-model="editingEmployee.reg_street" placeholder="Улица регистрации">
+              <input v-model="editingEmployee.reg_house" placeholder="Дом регистрации">
+              <input v-model="editingEmployee.reg_building" placeholder="Корпус регистрации">
+              <input v-model="editingEmployee.reg_apartment" placeholder="Квартира регистрации">
               <input v-model.number="editingEmployee.scan" type="number" placeholder="Скан">
               <button @click="updateEmployee">Сохранить</button>
               <button @click="cancelEdit">Отмена</button>
@@ -33,8 +55,19 @@
               <p>Имя: {{ employee.first_name }}</p>
               <p>Отчество: {{ employee.patronym }}</p>
               <p>Дата рождения: {{ employee.birth_date }}</p>
-              <p>Паспорт: {{ employee.passport }}</p>
-              <p>Регистрация: {{ employee.registration }}</p>
+              <!-- Passport fields -->
+              <p>Серия паспорта: {{ employee.passport_series }}</p>
+              <p>Номер паспорта: {{ employee.passport_number }}</p>
+              <p>Дата выдачи паспорта: {{ employee.passport_date }}</p>
+              <p>Код подразделения: {{ employee.passport_code }}</p>
+              <p>Кем выдан паспорт: {{ employee.passport_issued_by }}</p>
+              <!-- Registration fields -->
+              <p>Область регистрации: {{ employee.reg_state }}</p>
+              <p>Город регистрации: {{ employee.reg_city }}</p>
+              <p>Улица регистрации: {{ employee.reg_street }}</p>
+              <p>Дом регистрации: {{ employee.reg_house }}</p>
+              <p>Корпус регистрации: {{ employee.reg_building }}</p>
+              <p>Квартира регистрации: {{ employee.reg_apartment }}</p>
               <p>Скан: {{ employee.scan }}</p>
               <button @click="startEdit(employee)">Редактировать</button>
               <button @click="deleteEmployee(employee.id)">Удалить</button>
@@ -54,8 +87,17 @@ export default {
         first_name: '',
         patronym: '',
         birth_date: '',
-        passport: '',
-        registration: '',
+        passport_series: '',
+        passport_number: '',
+        passport_date: '',
+        passport_code: '',
+        passport_issued_by: '',
+        reg_state: '',
+        reg_city: '',
+        reg_street: '',
+        reg_house: '',
+        reg_building: '',
+        reg_apartment: '',
         scan: ''
       },
       editingEmployee: null,
@@ -99,8 +141,17 @@ export default {
           first_name: '',
           patronym: '',
           birth_date: '',
-          passport: '',
-          registration: '',
+          passport_series: '',
+          passport_number: '',
+          passport_date: '',
+          passport_code: '',
+          passport_issued_by: '',
+          reg_state: '',
+          reg_city: '',
+          reg_street: '',
+          reg_house: '',
+          reg_building: '',
+          reg_apartment: '',
           scan: ''
         }
         await this.fetchEmployees()
@@ -138,8 +189,17 @@ export default {
           first_name: this.editingEmployee.first_name,
           patronym: this.editingEmployee.patronym,
           birth_date: this.editingEmployee.birth_date,
-          passport: this.editingEmployee.passport,
-          registration: this.editingEmployee.registration,
+          passport_series: this.editingEmployee.passport_series,
+          passport_number: this.editingEmployee.passport_number,
+          passport_date: this.editingEmployee.passport_date,
+          passport_code: this.editingEmployee.passport_code,
+          passport_issued_by: this.editingEmployee.passport_issued_by,
+          reg_state: this.editingEmployee.reg_state,
+          reg_city: this.editingEmployee.reg_city,
+          reg_street: this.editingEmployee.reg_street,
+          reg_house: this.editingEmployee.reg_house,
+          reg_building: this.editingEmployee.reg_building,
+          reg_apartment: this.editingEmployee.reg_apartment,
           scan: this.editingEmployee.scan
         }
         await this.$api.put(`/employees/${this.editingEmployee.id}`, updateData)
