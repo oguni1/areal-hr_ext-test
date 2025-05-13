@@ -1,59 +1,59 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import Organizations from '../components/Organizations.vue'
-import Roles from '../components/Roles.vue'
-import Departments from '../components/Departments.vue'
-import Employees from '../components/Employees.vue'
-import Files from '../components/Files.vue'
-import OperationHistory from '../components/OperationHistory.vue'
-import Home from '../components/Home.vue'
-import Users from '../components/Users.vue'
+import { createRouter, createWebHistory } from 'vue-router';
+import Organizations from '../components/Organizations.vue';
+import Roles from '../components/Roles.vue';
+import Departments from '../components/Departments.vue';
+import Employees from '../components/Employees.vue';
+import Files from '../components/Files.vue';
+import OperationHistory from '../components/OperationHistory.vue';
+import Home from '../components/Home.vue';
+import Users from '../components/Users.vue';
 
 const routes = [
   {
     path: '/',
     name: 'home',
-    component: Home
+    component: Home,
   },
   {
     path: '/organizations',
     name: 'organizations',
-    component: Organizations
+    component: Organizations,
   },
   {
-      path: '/roles',
-      name: 'roles',
-      component:Roles
+    path: '/roles',
+    name: 'roles',
+    component: Roles,
   },
   {
-        path: '/departments',
-        name: 'departments',
-        component: Departments
+    path: '/departments',
+    name: 'departments',
+    component: Departments,
   },
   {
     path: '/employees',
     name: 'Employees',
-    component: Employees
+    component: Employees,
   },
   {
     path: '/files',
     name: 'Files',
-    component: Files
+    component: Files,
   },
   {
     path: '/operation-history',
     name: 'OperationHistory',
-    component: OperationHistory
+    component: OperationHistory,
   },
   {
     path: '/users',
     name: 'users',
-    component: Users
-  }
-]
+    component: Users,
+  },
+];
 
 const router = createRouter({
   history: createWebHistory(),
-  routes
-})
+  routes,
+});
 
-export default router
+export default router;

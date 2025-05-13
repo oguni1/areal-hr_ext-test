@@ -6,11 +6,13 @@ const routes = require('./routes');
 const app = express();
 const PORT = 8081;
 
-app.use(cors({
-  origin: 'http://localhost:8080',
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type']
-}));
+app.use(
+  cors({
+    origin: 'http://localhost:8080',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type'],
+  })
+);
 
 app.use(bodyParser.json());
 app.use('/api', routes);
