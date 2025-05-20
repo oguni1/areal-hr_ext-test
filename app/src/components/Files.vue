@@ -3,19 +3,42 @@
     <h1>Файлы</h1>
     <div>
       <h2>Добавить файл</h2>
-      <input v-model="newFile.name" placeholder="Название файла" />
-      <input v-model="newFile.path" placeholder="Путь к файлу" />
-      <select v-model.number="newFile.employee_id">
-        <option value="">Выберите сотрудника</option>
-        <option
-          v-for="employee in employees"
-          :key="employee.id"
-          :value="employee.id"
+      <div class="form-group">
+        <input 
+          v-model="newFile.name" 
+          placeholder="Название файла"
+          @input="validateField('name', newFile.name)"
+        />
+        <span class="error" v-if="errors.name">{{ errors.name }}</span>
+      </div>
+      
+      <div class="form-group">
+        <input 
+          v-model="newFile.path" 
+          placeholder="Путь к файлу"
+          @input="validateField('path', newFile.path)"
+        />
+        <span class="error" v-if="errors.path">{{ errors.path }}</span>
+      </div>
+      
+      <div class="form-group">
+        <select 
+          v-model.number="newFile.employee_id"
+          @change="validateField('employee_id', newFile.employee_id)"
         >
-          {{ employee.last_name }} {{ employee.first_name }}
-        </option>
-      </select>
-      <button @click="addFile">Добавить</button>
+          <option value="">Выберите сотрудника</option>
+          <option
+            v-for="employee in employees"
+            :key="employee.id"
+            :value="employee.id"
+          >
+            {{ employee.last_name }} {{ employee.first_name }}
+          </option>
+        </select>
+        <span class="error" v-if="errors.employee_id">{{ errors.employee_id }}</span>
+      </div>
+      
+      <button @click="addFile" :disabled="!isFormValid">Добавить</button>
     </div>
 
     <div>
@@ -23,19 +46,42 @@
       <div v-for="file in files" :key="file.id">
         <p>ID: {{ file.id }}</p>
         <template v-if="editingFile && editingFile.id === file.id">
-          <input v-model="editingFile.name" placeholder="Название файла" />
-          <input v-model="editingFile.path" placeholder="Путь к файлу" />
-          <select v-model.number="editingFile.employee_id">
-            <option value="">Выберите сотрудника</option>
-            <option
-              v-for="employee in employees"
-              :key="employee.id"
-              :value="employee.id"
+          <div class="form-group">
+            <input 
+              v-model="editingFile.name" 
+              placeholder="Название файла"
+              @input="validateField('name', editingFile.name)"
+            />
+            <span class="error" v-if="errors.name">{{ errors.name }}</span>
+          </div>
+          
+          <div class="form-group">
+            <input 
+              v-model="editingFile.path" 
+              placeholder="Путь к файлу"
+              @input="validateField('path', editingFile.path)"
+            />
+            <span class="error" v-if="errors.path">{{ errors.path }}</span>
+          </div>
+          
+          <div class="form-group">
+            <select 
+              v-model.number="editingFile.employee_id"
+              @change="validateField('employee_id', editingFile.employee_id)"
             >
-              {{ employee.last_name }} {{ employee.first_name }}
-            </option>
-          </select>
-          <button @click="updateFile">Сохранить</button>
+              <option value="">Выберите сотрудника</option>
+              <option
+                v-for="employee in employees"
+                :key="employee.id"
+                :value="employee.id"
+              >
+                {{ employee.last_name }} {{ employee.first_name }}
+              </option>
+            </select>
+            <span class="error" v-if="errors.employee_id">{{ errors.employee_id }}</span>
+          </div>
+          
+          <button @click="updateFile" :disabled="!isFormValid">Сохранить</button>
           <button @click="cancelEdit">Отмена</button>
         </template>
         <template v-else>
@@ -63,7 +109,13 @@ export default {
       },
       editingFile: null,
       loading: false,
+      errors: {},
     };
+  },
+  computed: {
+    isFormValid() {
+      return Object.keys(this.errors).length === 0;
+    }
   },
   async created() {
     await this.fetchFiles();
@@ -100,13 +152,45 @@ export default {
         ? `${employee.last_name} ${employee.first_name}`
         : 'Не указан';
     },
+    validateField(field, value) {
+      this.errors[field] = '';
+      
+      switch (field) {
+        case 'name':
+          if (!value) {
+            this.errors[field] = 'Название файла обязательно';
+          } else if (value.length < 2) {
+            this.errors[field] = 'Минимальная длина 2 символа';
+          } else if (value.length > 255) {
+            this.errors[field] = 'Максимальная длина 255 символов';
+          }
+          break;
+          
+        case 'path':
+          if (!value) {
+            this.errors[field] = 'Путь к файлу обязателен';
+          } else if (!/^[a-zA-Z0-9\/\\\-_\.]+$/.test(value)) {
+            this.errors[field] = 'Некорректный путь к файлу';
+          }
+          break;
+          
+        case 'employee_id':
+          if (!value) {
+            this.errors[field] = 'Выберите сотрудника';
+          }
+          break;
+      }
+    },
+    
+    validateForm(form) {
+      Object.keys(form).forEach(field => {
+        this.validateField(field, form[field]);
+      });
+      return this.isFormValid;
+    },
+    
     async addFile() {
-      if (
-        !this.newFile.name ||
-        !this.newFile.path ||
-        !this.newFile.employee_id
-      ) {
-        alert('Все поля обязательны!');
+      if (!this.validateForm(this.newFile)) {
         return;
       }
 
@@ -121,6 +205,7 @@ export default {
           path: '',
           employee_id: '',
         };
+        this.errors = {};
         await this.fetchFiles();
       } catch (error) {
         console.error('Ошибка при добавлении файла:', error);
@@ -144,12 +229,7 @@ export default {
       this.editingFile = null;
     },
     async updateFile() {
-      if (
-        !this.editingFile.name ||
-        !this.editingFile.path ||
-        !this.editingFile.employee_id
-      ) {
-        alert('Все поля обязательны!');
+      if (!this.validateForm(this.editingFile)) {
         return;
       }
 
@@ -162,6 +242,7 @@ export default {
         };
         await this.$api.put(`/files/${this.editingFile.id}`, updateData);
         this.editingFile = null;
+        this.errors = {};
         await this.fetchFiles();
       } catch (error) {
         console.error('Ошибка при обновлении файла:', error);

@@ -4,7 +4,6 @@ import Roles from '../components/Roles.vue';
 import Departments from '../components/Departments.vue';
 import Employees from '../components/Employees.vue';
 import Files from '../components/Files.vue';
-import OperationHistory from '../components/OperationHistory.vue';
 import Home from '../components/Home.vue';
 import Users from '../components/Users.vue';
 
@@ -38,11 +37,6 @@ const routes = [
     path: '/files',
     name: 'Files',
     component: Files,
-  },
-  {
-    path: '/operation-history',
-    name: 'OperationHistory',
-    component: OperationHistory,
   },
   {
     path: '/users',

@@ -8,9 +8,6 @@
         <li><router-link to="/departments">Departments</router-link></li>
         <li><router-link to="/employees">Employees</router-link></li>
         <li><router-link to="/files">Files</router-link></li>
-        <li>
-          <router-link to="/operation-history">Operation History</router-link>
-        </li>
         <li><router-link to="/users">Users</router-link></li>
       </ul>
     </nav>

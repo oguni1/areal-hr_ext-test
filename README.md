@@ -5,17 +5,21 @@
 Запуск бэкенда:
 
 cd api
+
 node server.js
 
 Клиент:
 
 cd app
+
 npm run serve
 
 Миграции:
 
 cd api
+
 cd migrations
+
 node run_migrations.js
 
 ## Используемый инструментарий:

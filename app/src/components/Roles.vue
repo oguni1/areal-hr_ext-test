@@ -3,8 +3,15 @@
     <h1>Роли</h1>
     <div>
       <h2>Добавить роль</h2>
-      <input v-model="newRole.name" placeholder="Название роли" />
-      <button @click="addRole">Добавить</button>
+      <div class="form-group">
+        <input 
+          v-model="newRole.name" 
+          placeholder="Название роли"
+          @input="validateField('name', newRole.name)"
+        />
+        <span class="error" v-if="errors.name">{{ errors.name }}</span>
+      </div>
+      <button @click="addRole" :disabled="!isFormValid">Добавить</button>
     </div>
 
     <div>
@@ -12,8 +19,15 @@
       <div v-for="role in roles" :key="role.id">
         <p>ID: {{ role.id }}</p>
         <template v-if="editingRole && editingRole.id === role.id">
-          <input v-model="editingRole.name" placeholder="Название роли" />
-          <button @click="updateRole">Сохранить</button>
+          <div class="form-group">
+            <input 
+              v-model="editingRole.name" 
+              placeholder="Название роли"
+              @input="validateField('name', editingRole.name)"
+            />
+            <span class="error" v-if="errors.name">{{ errors.name }}</span>
+          </div>
+          <button @click="updateRole" :disabled="!isFormValid">Сохранить</button>
           <button @click="cancelEdit">Отмена</button>
         </template>
         <template v-else>
@@ -36,7 +50,13 @@ export default {
       },
       editingRole: null,
       loading: false,
+      errors: {},
     };
+  },
+  computed: {
+    isFormValid() {
+      return Object.keys(this.errors).length === 0;
+    }
   },
   async created() {
     await this.fetchRoles();
@@ -58,9 +78,31 @@ export default {
         this.loading = false;
       }
     },
+    validateField(field, value) {
+      this.errors[field] = '';
+      
+      switch (field) {
+        case 'name':
+          if (!value) {
+            this.errors[field] = 'Название роли обязательно';
+          } else if (value.length < 2) {
+            this.errors[field] = 'Минимальная длина 2 символа';
+          } else if (value.length > 50) {
+            this.errors[field] = 'Максимальная длина 50 символов';
+          }
+          break;
+      }
+    },
+    
+    validateForm(form) {
+      Object.keys(form).forEach(field => {
+        this.validateField(field, form[field]);
+      });
+      return this.isFormValid;
+    },
+    
     async addRole() {
-      if (!this.newRole.name) {
-        alert('Название роли обязательно!');
+      if (!this.validateForm(this.newRole)) {
         return;
       }
 
@@ -71,6 +113,7 @@ export default {
         };
         await this.$api.post('/roles', newRoleWithId);
         this.newRole = { name: '' };
+        this.errors = {};
         await this.fetchRoles();
       } catch (error) {
         console.error('Ошибка при добавлении роли:', error);
@@ -94,8 +137,7 @@ export default {
       this.editingRole = null;
     },
     async updateRole() {
-      if (!this.editingRole.name) {
-        alert('Название роли обязательно!');
+      if (!this.validateForm(this.editingRole)) {
         return;
       }
 
@@ -106,6 +148,7 @@ export default {
         };
         await this.$api.put(`/roles/${this.editingRole.id}`, updateData);
         this.editingRole = null;
+        this.errors = {};
         await this.fetchRoles();
       } catch (error) {
         console.error('Ошибка при обновлении роли:', error);

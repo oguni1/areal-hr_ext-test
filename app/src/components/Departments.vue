@@ -3,21 +3,51 @@
     <h1>Отделы</h1>
     <div>
       <h2>Добавить отдел</h2>
-      <select v-model.number="newDepartment.organization_id">
-        <option value="">Выберите организацию</option>
-        <option v-for="org in organizations" :key="org.id" :value="org.id">
-          {{ org.name }}
-        </option>
-      </select>
-      <select v-model.number="newDepartment.department_id">
-        <option value="">Выберите родительский отдел</option>
-        <option v-for="dept in departments" :key="dept.id" :value="dept.id">
-          {{ dept.name }}
-        </option>
-      </select>
-      <input v-model="newDepartment.name" placeholder="Название отдела" />
-      <input v-model="newDepartment.comment" placeholder="Комментарий" />
-      <button @click="addDepartment">Добавить</button>
+      <div class="form-group">
+        <select 
+          v-model.number="newDepartment.organization_id"
+          @change="validateField('organization_id', newDepartment.organization_id)"
+        >
+          <option value="">Выберите организацию</option>
+          <option v-for="org in organizations" :key="org.id" :value="org.id">
+            {{ org.name }}
+          </option>
+        </select>
+        <span class="error" v-if="errors.organization_id">{{ errors.organization_id }}</span>
+      </div>
+      
+      <div class="form-group">
+        <select 
+          v-model.number="newDepartment.department_id"
+          @change="validateField('department_id', newDepartment.department_id)"
+        >
+          <option value="">Выберите родительский отдел</option>
+          <option v-for="dept in departments" :key="dept.id" :value="dept.id">
+            {{ dept.name }}
+          </option>
+        </select>
+        <span class="error" v-if="errors.department_id">{{ errors.department_id }}</span>
+      </div>
+      
+      <div class="form-group">
+        <input 
+          v-model="newDepartment.name" 
+          placeholder="Название отдела"
+          @input="validateField('name', newDepartment.name)"
+        />
+        <span class="error" v-if="errors.name">{{ errors.name }}</span>
+      </div>
+      
+      <div class="form-group">
+        <input 
+          v-model="newDepartment.comment" 
+          placeholder="Комментарий"
+          @input="validateField('comment', newDepartment.comment)"
+        />
+        <span class="error" v-if="errors.comment">{{ errors.comment }}</span>
+      </div>
+      
+      <button @click="addDepartment" :disabled="!isFormValid">Добавить</button>
     </div>
 
     <div>
@@ -27,27 +57,51 @@
         <template
           v-if="editingDepartment && editingDepartment.id === department.id"
         >
-          <select v-model.number="editingDepartment.organization_id">
-            <option value="">Выберите организацию</option>
-            <option v-for="org in organizations" :key="org.id" :value="org.id">
-              {{ org.name }}
-            </option>
-          </select>
-          <select v-model.number="editingDepartment.department_id">
-            <option value="">Выберите родительский отдел</option>
-            <option v-for="dept in departments" :key="dept.id" :value="dept.id">
-              {{ dept.name }}
-            </option>
-          </select>
-          <input
-            v-model="editingDepartment.name"
-            placeholder="Название отдела"
-          />
-          <input
-            v-model="editingDepartment.comment"
-            placeholder="Комментарий"
-          />
-          <button @click="updateDepartment">Сохранить</button>
+          <div class="form-group">
+            <select 
+              v-model.number="editingDepartment.organization_id"
+              @change="validateField('organization_id', editingDepartment.organization_id)"
+            >
+              <option value="">Выберите организацию</option>
+              <option v-for="org in organizations" :key="org.id" :value="org.id">
+                {{ org.name }}
+              </option>
+            </select>
+            <span class="error" v-if="errors.organization_id">{{ errors.organization_id }}</span>
+          </div>
+          
+          <div class="form-group">
+            <select 
+              v-model.number="editingDepartment.department_id"
+              @change="validateField('department_id', editingDepartment.department_id)"
+            >
+              <option value="">Выберите родительский отдел</option>
+              <option v-for="dept in departments" :key="dept.id" :value="dept.id">
+                {{ dept.name }}
+              </option>
+            </select>
+            <span class="error" v-if="errors.department_id">{{ errors.department_id }}</span>
+          </div>
+          
+          <div class="form-group">
+            <input
+              v-model="editingDepartment.name"
+              placeholder="Название отдела"
+              @input="validateField('name', editingDepartment.name)"
+            />
+            <span class="error" v-if="errors.name">{{ errors.name }}</span>
+          </div>
+          
+          <div class="form-group">
+            <input
+              v-model="editingDepartment.comment"
+              placeholder="Комментарий"
+              @input="validateField('comment', editingDepartment.comment)"
+            />
+            <span class="error" v-if="errors.comment">{{ errors.comment }}</span>
+          </div>
+          
+          <button @click="updateDepartment" :disabled="!isFormValid">Сохранить</button>
           <button @click="cancelEdit">Отмена</button>
         </template>
         <template v-else>
@@ -82,7 +136,13 @@ export default {
       },
       editingDepartment: null,
       loading: false,
+      errors: {},
     };
+  },
+  computed: {
+    isFormValid() {
+      return Object.keys(this.errors).length === 0;
+    }
   },
   async created() {
     await this.fetchDepartments();
@@ -123,9 +183,49 @@ export default {
       const dept = this.departments.find((d) => d.id === deptId);
       return dept ? dept.name : 'Не указан';
     },
+    validateField(field, value) {
+      this.errors[field] = '';
+      
+      switch (field) {
+        case 'name':
+          if (!value) {
+            this.errors[field] = 'Название отдела обязательно';
+          } else if (value.length < 2) {
+            this.errors[field] = 'Минимальная длина 2 символа';
+          } else if (value.length > 255) {
+            this.errors[field] = 'Максимальная длина 255 символов';
+          }
+          break;
+          
+        case 'organization_id':
+          if (!value) {
+            this.errors[field] = 'Выберите организацию';
+          }
+          break;
+          
+        case 'department_id':
+          if (value === this.editingDepartment?.id || value === this.newDepartment?.id) {
+            this.errors[field] = 'Отдел не может быть родительским для самого себя';
+          }
+          break;
+          
+        case 'comment':
+          if (value && value.length > 1000) {
+            this.errors[field] = 'Максимальная длина комментария 1000 символов';
+          }
+          break;
+      }
+    },
+    
+    validateForm(form) {
+      Object.keys(form).forEach(field => {
+        this.validateField(field, form[field]);
+      });
+      return this.isFormValid;
+    },
+    
     async addDepartment() {
-      if (!this.newDepartment.name || !this.newDepartment.organization_id) {
-        alert('Название отдела и организация обязательны!');
+      if (!this.validateForm(this.newDepartment)) {
         return;
       }
 
@@ -141,6 +241,7 @@ export default {
           name: '',
           comment: '',
         };
+        this.errors = {};
         await this.fetchDepartments();
       } catch (error) {
         console.error('Ошибка при добавлении отдела:', error);
@@ -164,11 +265,7 @@ export default {
       this.editingDepartment = null;
     },
     async updateDepartment() {
-      if (
-        !this.editingDepartment.name ||
-        !this.editingDepartment.organization_id
-      ) {
-        alert('Название отдела и организация обязательны!');
+      if (!this.validateForm(this.editingDepartment)) {
         return;
       }
 
@@ -178,6 +275,7 @@ export default {
           this.editingDepartment
         );
         this.editingDepartment = null;
+        this.errors = {};
         await this.fetchDepartments();
       } catch (error) {
         console.error('Ошибка при обновлении отдела:', error);

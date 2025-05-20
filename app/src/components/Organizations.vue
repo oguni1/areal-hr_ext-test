@@ -4,9 +4,25 @@
 
     <div>
       <h2>Добавить организацию</h2>
-      <input v-model="newOrg.name" placeholder="Название организации" />
-      <input v-model="newOrg.comment" placeholder="Комментарий" />
-      <button @click="addOrg">Добавить</button>
+      <div class="form-group">
+        <input 
+          v-model="newOrg.name" 
+          placeholder="Название организации"
+          @input="validateField('name', newOrg.name)"
+        />
+        <span class="error" v-if="errors.name">{{ errors.name }}</span>
+      </div>
+      
+      <div class="form-group">
+        <input 
+          v-model="newOrg.comment" 
+          placeholder="Комментарий"
+          @input="validateField('comment', newOrg.comment)"
+        />
+        <span class="error" v-if="errors.comment">{{ errors.comment }}</span>
+      </div>
+      
+      <button @click="addOrg" :disabled="!isFormValid">Добавить</button>
     </div>
 
     <div>
@@ -14,9 +30,25 @@
       <div v-for="org in organizations" :key="org.id">
         <p>id: {{ org.id }}</p>
         <template v-if="editingOrg && editingOrg.id === org.id">
-          <input v-model="editingOrg.name" placeholder="Название организации" />
-          <input v-model="editingOrg.comment" placeholder="Комментарий" />
-          <button @click="updateOrg">Сохранить</button>
+          <div class="form-group">
+            <input 
+              v-model="editingOrg.name" 
+              placeholder="Название организации"
+              @input="validateField('name', editingOrg.name)"
+            />
+            <span class="error" v-if="errors.name">{{ errors.name }}</span>
+          </div>
+          
+          <div class="form-group">
+            <input 
+              v-model="editingOrg.comment" 
+              placeholder="Комментарий"
+              @input="validateField('comment', editingOrg.comment)"
+            />
+            <span class="error" v-if="errors.comment">{{ errors.comment }}</span>
+          </div>
+          
+          <button @click="updateOrg" :disabled="!isFormValid">Сохранить</button>
           <button @click="cancelEdit">Отмена</button>
         </template>
         <template v-else>
@@ -42,7 +74,13 @@ export default {
       },
       editingOrg: null,
       loading: false,
+      errors: {},
     };
+  },
+  computed: {
+    isFormValid() {
+      return Object.keys(this.errors).length === 0;
+    }
   },
   async created() {
     await this.fetchOrgs();
@@ -66,9 +104,37 @@ export default {
         this.loading = false;
       }
     },
+    validateField(field, value) {
+      this.errors[field] = '';
+      
+      switch (field) {
+        case 'name':
+          if (!value) {
+            this.errors[field] = 'Название организации обязательно';
+          } else if (value.length < 2) {
+            this.errors[field] = 'Минимальная длина 2 символа';
+          } else if (value.length > 255) {
+            this.errors[field] = 'Максимальная длина 255 символов';
+          }
+          break;
+          
+        case 'comment':
+          if (value && value.length > 1000) {
+            this.errors[field] = 'Максимальная длина комментария 1000 символов';
+          }
+          break;
+      }
+    },
+    
+    validateForm(form) {
+      Object.keys(form).forEach(field => {
+        this.validateField(field, form[field]);
+      });
+      return this.isFormValid;
+    },
+    
     async addOrg() {
-      if (!this.newOrg.name) {
-        alert('Название организации обязательно!');
+      if (!this.validateForm(this.newOrg)) {
         return;
       }
 
@@ -79,6 +145,7 @@ export default {
         };
         await this.$api.post('/organizations', newOrgWithId);
         this.newOrg = { name: '', comment: '' };
+        this.errors = {};
         await this.fetchOrgs();
       } catch (error) {
         console.error('Ошибка при добавлении организации:', error);
@@ -102,8 +169,7 @@ export default {
       this.editingOrg = null;
     },
     async updateOrg() {
-      if (!this.editingOrg.name) {
-        alert('Название организации обязательно!');
+      if (!this.validateForm(this.editingOrg)) {
         return;
       }
 
@@ -115,6 +181,7 @@ export default {
         };
         await this.$api.put(`/organizations/${this.editingOrg.id}`, updateData);
         this.editingOrg = null;
+        this.errors = {};
         await this.fetchOrgs();
       } catch (error) {
         console.error('Ошибка при обновлении организации:', error);
